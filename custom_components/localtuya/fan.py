@@ -100,14 +100,6 @@ class LocalTuyaFan(LocalTuyaEntity, FanEntity):
         return self._direction
 
     @property
-    def extra_state_attributes(self):
-        """Expose the available direction modes."""
-        attrs = super().extra_state_attributes or {}
-        if names := self._direction_modes.names:
-            attrs = {**attrs, "direction_list": names}
-        return attrs
-
-    @property
     def preset_modes(self):
         """Direction modes, shown as presets (the card has no custom directions)."""
         return self._direction_modes.names or None
@@ -226,9 +218,10 @@ class LocalTuyaFan(LocalTuyaEntity, FanEntity):
             features |= FanEntityFeature.SET_SPEED
 
         if self.has_config(CONF_FAN_DIRECTION):
-            features |= FanEntityFeature.DIRECTION
             if self._direction_modes.values:
                 features |= FanEntityFeature.PRESET_MODE
+            else:
+                features |= FanEntityFeature.DIRECTION
 
         features |= FanEntityFeature.TURN_OFF
         features |= FanEntityFeature.TURN_ON

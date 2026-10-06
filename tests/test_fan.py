@@ -2,6 +2,7 @@
 
 from . import *
 import math
+from homeassistant.components.fan import FanEntityFeature
 from custom_components.localtuya.fan import LocalTuyaFan, DOMAIN as PLATFORM_DOMAIN
 from homeassistant.util.percentage import (
     int_states_in_range,
@@ -90,8 +91,10 @@ async def test_fan():
     # Detected direction modes replace forward/reverse.
     device.status_updated({**DPS_STATUS, "4": "exhaust"})
     assert entity_2.current_direction == "Exhaust"
-    assert entity_2.extra_state_attributes["direction_list"] == ["Cool", "Exhaust"]
     assert entity_1.current_direction == "reverse"  # no modes: legacy, unchanged
     assert entity_2.preset_modes == ["Cool", "Exhaust"]
     assert entity_2.preset_mode == "Exhaust"
     assert entity_1.preset_modes is None
+    assert FanEntityFeature.PRESET_MODE in entity_2.supported_features
+    assert FanEntityFeature.DIRECTION not in entity_2.supported_features
+    assert FanEntityFeature.DIRECTION in entity_1.supported_features
