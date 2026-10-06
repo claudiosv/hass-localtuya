@@ -1,0 +1,29 @@
+custom_components/localtuya/const.py
+  s_b754d1b07d680f::t_e14790ab03a033 125
+custom_components/localtuya/core/ha_entities/fans.py
+  s_b754d1b07d680f::t_e14790ab03a033 26,45
+custom_components/localtuya/fan.py
+  s_b754d1b07d680f::t_f1f0162b3d86f8 10,30,38,52,80-84,102-109,192-194,196,198-199,268-270
+custom_components/localtuya/strings.json
+  s_b754d1b07d680f::t_e14790ab03a033 110
+custom_components/localtuya/translations/en.json
+  s_b754d1b07d680f::t_d775e185c95712 209
+tests/test_fan.py
+  s_b754d1b07d680f::t_4d62ba5a27918e 43,89-94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "bc8337a5ec4df462277852f0ff283d63cd24a5f3",
+  "prompts": {},
+  "sessions": {
+    "s_b754d1b07d680f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "413f439e-e7ac-4e68-97bd-c2b3ec1ea585",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
