@@ -7,6 +7,7 @@ from .config_flow import col_to_select
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
+from homeassistant.helpers.selector import ObjectSelector
 from homeassistant.components.fan import (
     DIRECTION_FORWARD,
     DIRECTION_REVERSE,
@@ -26,6 +27,7 @@ from .entity import LocalTuyaEntity, async_setup_entry
 from .const import (
     CONF_FAN_DIRECTION,
     CONF_FAN_DIRECTION_FWD,
+    CONF_FAN_DIRECTION_MODES,
     CONF_FAN_DIRECTION_REV,
     CONF_FAN_DPS_TYPE,
     CONF_FAN_ORDERED_LIST,
@@ -33,6 +35,7 @@ from .const import (
     CONF_FAN_SPEED_CONTROL,
     CONF_FAN_SPEED_MAX,
     CONF_FAN_SPEED_MIN,
+    DictSelector,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -46,6 +49,7 @@ def flow_schema(dps):
         vol.Optional(CONF_FAN_DIRECTION): col_to_select(dps, is_dps=True),
         vol.Optional(CONF_FAN_DIRECTION_FWD, default="forward"): cv.string,
         vol.Optional(CONF_FAN_DIRECTION_REV, default="reverse"): cv.string,
+        vol.Optional(CONF_FAN_DIRECTION_MODES, default={}): ObjectSelector(),
         vol.Optional(CONF_FAN_SPEED_MIN, default=1): cv.positive_int,
         vol.Optional(CONF_FAN_SPEED_MAX, default=9): cv.positive_int,
         vol.Optional(CONF_FAN_ORDERED_LIST, default="disabled"): cv.string,
@@ -73,6 +77,11 @@ class LocalTuyaFan(LocalTuyaEntity, FanEntity):
             int(self._config.get(CONF_FAN_SPEED_MIN, 1)),
             int(self._config.get(CONF_FAN_SPEED_MAX, 9)),
         )
+        # Detected direction modes {tuya_value: name}, replaces forward/reverse.
+        modes = self._config.get(CONF_FAN_DIRECTION_MODES) or {}
+        self._direction_modes = DictSelector(
+            {k: v or k.replace("_", " ").capitalize() for k, v in modes.items()}
+        )
         self._ordered_list = self._config.get(CONF_FAN_ORDERED_LIST).split(",")
 
         if isinstance(self._ordered_list, list) and len(self._ordered_list) > 1:
@@ -89,6 +98,14 @@ class LocalTuyaFan(LocalTuyaEntity, FanEntity):
     def current_direction(self):
         """Return the current direction of the fan."""
         return self._direction
+
+    @property
+    def extra_state_attributes(self):
+        """Expose the available direction modes."""
+        attrs = super().extra_state_attributes or {}
+        if names := self._direction_modes.names:
+            attrs = {**attrs, "direction_list": names}
+        return attrs
 
     @property
     def is_on(self):
@@ -172,11 +189,14 @@ class LocalTuyaFan(LocalTuyaEntity, FanEntity):
         """Set the direction of the fan."""
         _LOGGER.debug("Fan async_set_direction: %s", direction)
 
-        if direction == DIRECTION_FORWARD:
+        if self._direction_modes.values:
+            value = self._direction_modes.to_tuya(direction)
+        elif direction == DIRECTION_FORWARD:
             value = self._config.get(CONF_FAN_DIRECTION_FWD)
-
-        if direction == DIRECTION_REVERSE:
+        elif direction == DIRECTION_REVERSE:
             value = self._config.get(CONF_FAN_DIRECTION_REV)
+        else:
+            return
         await self._device.set_dp(value, self._config.get(CONF_FAN_DIRECTION))
         self.schedule_update_ha_state()
 
@@ -245,7 +265,9 @@ class LocalTuyaFan(LocalTuyaEntity, FanEntity):
 
         if self.has_config(CONF_FAN_DIRECTION):
             value = self.dp_value(CONF_FAN_DIRECTION)
-            if value is not None:
+            if value is not None and self._direction_modes.values:
+                self._direction = self._direction_modes.to_ha(str(value), self._direction)
+            elif value is not None:
                 if value == self._config.get(CONF_FAN_DIRECTION_FWD):
                     self._direction = DIRECTION_FORWARD
 

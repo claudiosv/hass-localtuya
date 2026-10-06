@@ -40,6 +40,7 @@ CONFIG = {
                 "fan_speed_min": 1,
                 "fan_speed_max": 6,
                 "fan_speed_ordered_list": "low,mid,high,max",
+                "fan_direction_modes": {"cool": "Cool", "exhaust": "Exhaust"},
                 "id": "21",
                 "platform": "fan",
                 "icon": "",
@@ -85,3 +86,9 @@ async def test_fan():
     assert entity_2.percentage == speed_percentage
     assert percentage_to_ordered_list_item(speed_range, 0) == speed_range[0]
     assert percentage_to_ordered_list_item(speed_range, 100) == speed_range[-1]
+
+    # Detected direction modes replace forward/reverse.
+    device.status_updated({**DPS_STATUS, "4": "exhaust"})
+    assert entity_2.current_direction == "Exhaust"
+    assert entity_2.extra_state_attributes["direction_list"] == ["Cool", "Exhaust"]
+    assert entity_1.current_direction == "reverse"  # no modes: legacy, unchanged

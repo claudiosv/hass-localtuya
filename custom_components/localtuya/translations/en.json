@@ -206,6 +206,7 @@
                     "fan_direction":"Fan Direction DP",
                     "fan_direction_forward": "Forward DP string",
                     "fan_direction_reverse": "Reverse DP string",
+                    "fan_direction_modes": "Fan direction modes (Tuya value: name)",
                     "fan_dps_type": "DP value type",
                     "current_temperature_dp": "Current Temperature",
                     "target_temperature_dp": "Target Temperature",
