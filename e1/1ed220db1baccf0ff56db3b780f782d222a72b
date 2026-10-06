@@ -1,0 +1,21 @@
+custom_components/localtuya/fan.py
+  s_b754d1b07d680f::t_dacfc322f9214c 223-224
+tests/test_fan.py
+  s_b754d1b07d680f::t_1647f3a67d8b66 5,98-100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e11ed220db1baccf0ff56db3b780f782d222a72b",
+  "prompts": {},
+  "sessions": {
+    "s_b754d1b07d680f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "413f439e-e7ac-4e68-97bd-c2b3ec1ea585",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "Claudio Spiess <claudiosv@users.noreply.github.com>"
+    }
+  }
+}
