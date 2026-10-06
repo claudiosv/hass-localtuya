@@ -59,7 +59,7 @@ FANS: dict[str, tuple[LocalTuyaEntity, ...]] = {
             name="Fan",
             icon="mdi:fan",
             fan_speed_control=FAN_SPEED_DP,
-            fan_direction=DPCode.FAN_DIRECTION,
+            fan_direction=(DPCode.FAN_DIRECTION, DPCode.MODE),
             fan_oscillating_control=FANS_OSCILLATING,
             custom_configs=localtuya_fan(
                 DIRECTION_FORWARD, DIRECTION_REVERSE, 1, 100, "disabled", "int"

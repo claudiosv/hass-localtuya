@@ -108,6 +108,20 @@ class LocalTuyaFan(LocalTuyaEntity, FanEntity):
         return attrs
 
     @property
+    def preset_modes(self):
+        """Direction modes, shown as presets (the card has no custom directions)."""
+        return self._direction_modes.names or None
+
+    @property
+    def preset_mode(self):
+        """Return the current preset (same as the direction mode)."""
+        return self._direction if self._direction_modes.values else None
+
+    async def async_set_preset_mode(self, preset_mode: str) -> None:
+        """Set preset, same DP as direction."""
+        await self.async_set_direction(preset_mode)
+
+    @property
     def is_on(self):
         """Check if Tuya fan is on."""
         return self._is_on
@@ -213,6 +227,8 @@ class LocalTuyaFan(LocalTuyaEntity, FanEntity):
 
         if self.has_config(CONF_FAN_DIRECTION):
             features |= FanEntityFeature.DIRECTION
+            if self._direction_modes.values:
+                features |= FanEntityFeature.PRESET_MODE
 
         features |= FanEntityFeature.TURN_OFF
         features |= FanEntityFeature.TURN_ON

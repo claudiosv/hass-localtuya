@@ -92,3 +92,6 @@ async def test_fan():
     assert entity_2.current_direction == "Exhaust"
     assert entity_2.extra_state_attributes["direction_list"] == ["Cool", "Exhaust"]
     assert entity_1.current_direction == "reverse"  # no modes: legacy, unchanged
+    assert entity_2.preset_modes == ["Cool", "Exhaust"]
+    assert entity_2.preset_mode == "Exhaust"
+    assert entity_1.preset_modes is None
