@@ -51,21 +51,25 @@ def localtuya_fan(fwd, rev, min_speed, max_speed, order, dp_type):
     return data
 
 
-FANS: dict[str, tuple[LocalTuyaEntity, ...]] = {
-    # Fan
-    "fs": (
+def _fan_entities(direction):
+    return (
         LocalTuyaEntity(
             id=(DPCode.SWITCH_FAN, DPCode.FAN_SWITCH, DPCode.SWITCH),
             name="Fan",
             icon="mdi:fan",
             fan_speed_control=FAN_SPEED_DP,
-            fan_direction=(DPCode.FAN_DIRECTION, DPCode.MODE),
+            fan_direction=direction,
             fan_oscillating_control=FANS_OSCILLATING,
             custom_configs=localtuya_fan(
                 DIRECTION_FORWARD, DIRECTION_REVERSE, 1, 100, "disabled", "int"
             ),
         ),
-    ),
+    )
+
+
+FANS: dict[str, tuple[LocalTuyaEntity, ...]] = {
+    # Fan
+    "fs": _fan_entities((DPCode.FAN_DIRECTION, DPCode.MODE)),
     # Normal switch with fan controller.
     "tdq": (
         LocalTuyaEntity(
@@ -81,9 +85,10 @@ FANS: dict[str, tuple[LocalTuyaEntity, ...]] = {
         ),
     ),
 }
+# `mode` as direction is only valid for "fs"; elsewhere it is e.g. purifier modes.
 # Fan with Light
-FANS["fsd"] = FANS["fs"]
+FANS["fsd"] = _fan_entities(DPCode.FAN_DIRECTION)
 # Fan wall switch
-FANS["fskg"] = FANS["fs"]
+FANS["fskg"] = FANS["fsd"]
 # Air Purifier
-FANS["kj"] = FANS["fs"]
+FANS["kj"] = FANS["fsd"]
